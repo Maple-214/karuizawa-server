@@ -21,9 +21,9 @@
     "sourceMap": true,
   },
   "include": [
-    "mock/**/*"
+    "karuizawa/**/*"
   ],
   "exclude": [
-    "mock/dist"
+    "karuizawa/dist"
   ]
 }
