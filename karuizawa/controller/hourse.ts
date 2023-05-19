@@ -54,27 +54,33 @@ export default class Article {
 
   @get('/hourses')
   async getArticles(ctx: any) {
-    const data = await HourseModel.find();
-    ctx
-    console.log({ data });
-    return data
-
-    // const { importance, type, title, page = 1, limit = 20, sort } = ctx.request.body
-    // let mockList = articleList.filter(item => {
-    //   if (importance && item.importance !== +importance) return false
-    //   if (type && item.type !== type) return false
-    //   if (title && item.title.indexOf(title as string) < 0) return false
-    //   return true
-    // })
-
-    // if (sort === '-id') {
-    //   mockList = mockList.reverse()
-    // }
-    // const pageList = mockList.filter((_, index) => index < (limit as number) * (page as number) && index >= (limit as number) * (page as number - 1))
-    // return {
-    //   total: mockList.length,
-    //   items: pageList
-    // }
+    const page = parseInt(ctx.query.page) || 1; // 获取页码，默认为第一页
+    const limit = parseInt(ctx.query.limit) || 5; // 每页显示的数据量，默认为10
+    const title = ctx.query?.title || ''
+    try {
+      
+      // 查询当前页的数据
+      let data: any, total:number
+      if (title) {
+        data = await HourseModel.find({ name: new RegExp(title) })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        total =  (await HourseModel.find({ name: new RegExp(title) })).length
+      } else {
+        // 查询总记录数
+        total = await HourseModel.countDocuments();
+        data = await HourseModel.find()
+          .skip((page - 1) * limit)
+          .limit(limit);
+      }
+      console.log({ query: ctx.query });
+      return {
+        data,
+        total,
+      }
+    } catch (error) {
+      return { error: 'Internal Server Error' }
+    }
   }
 
   @get('/articleInfo')
@@ -95,43 +101,45 @@ export default class Article {
   @post('/createArticle')
   async createArticle(ctx: any) {
     const { indoor_map_desc, tag, pic_desc } = ctx.request.body
-    console.log({tag,pic_desc});
-    
-    let pic_descArr: any, tagArr: any, indoor_map_descArr: any
+    console.log({ tag, pic_desc, indoor_map_desc });
+
+    let pic_descArr: any, indoor_map_descArr: any, result: any
     if (pic_desc) pic_descArr = pic_desc?.split('&')
-    if (tag.length > 0  ) tagArr = tag?.split(',')
-    if (indoor_map_desc) indoor_map_descArr = cloneDeep(indoor_map_desc)
-    const result = indoor_map_descArr?.map((item: any, index: string | number) => {
-      return {
-        ...item,
-        desc: pic_descArr[index]
-      };
-    });
-    const insertData = { ...cloneDeep(ctx.request.body), indoor_map_desc: result, tag: tagArr }
+    if (indoor_map_desc.length > 0) {
+      indoor_map_descArr = cloneDeep(indoor_map_desc)
+      result = indoor_map_descArr?.map((item: any, index: string | number) => {
+        return {
+          ...item,
+          desc: pic_descArr[index]
+        };
+      });
+    }
+
+    const insertData = { ...cloneDeep(ctx.request.body), indoor_map_desc: result }
 
     const data = await HourseModel.create(insertData);
 
+    if (data) {
+      return data
+    } else {
+      ctx.body = {
+        code: 502,
+        msg: '服务端出错'
+      }
+    }
 
-    // return {
-    //   code: 20000,
-    //   data: {
-    //     article
-    //   }
-    // }
-    console.log({ 5555: data,tagArr });
+
+
+    console.log({ 5555: data });
 
   }
   @post('/updateArticle')
   async updateArticle(ctx: any) {
     const { indoor_map_desc, tag, pic_desc, _id } = ctx.request.body
 
-    console.log({tag});
-    
 
-   
-    let pic_descArr: any, tagArr: any, indoor_map_descArr: any
+    let pic_descArr: any, indoor_map_descArr: any
     if (pic_desc) pic_descArr = pic_desc?.split('&')
-    if (tag.length > 0  ) tagArr = tag?.split(',')
     if (indoor_map_desc) indoor_map_descArr = cloneDeep(indoor_map_desc)
     const result = indoor_map_descArr?.map((item: any, index: string | number) => {
       return {
@@ -139,27 +147,36 @@ export default class Article {
         desc: pic_descArr[index]
       };
     });
-    const insertData = { ...cloneDeep(ctx.request.body), indoor_map_desc: result, tag: tagArr }
+    console.log({ tag, pic_descArr });
+    const insertData = { ...cloneDeep(ctx.request.body), indoor_map_desc: result }
     const filter = { _id }; // 替换为你要更新的文档 ID
     const update = { $set: insertData }; // 替换为你要更新的字段和新值
-    
-
     const data = await HourseModel.updateOne(filter, update);
-
     console.log({ data, insertData });
-
-
-    return result
-  }
-
-  @post('/deleteArticle')
-  deleteArticle(ctx: any) {
-    console.log(ctx)
-    return {
-      code: 20000
+    if (data) {
+      return insertData
+    } else {
+      ctx.body = {
+        code: 502,
+        msg: '服务端出错'
+      }
     }
   }
 
+  @post('/delete')
+  async deleteArticle(ctx: any) {
+    const { _id } = ctx.request.body
+    const data = await HourseModel.deleteOne({ _id })
+    if (data.acknowledged) {
+      return {
+        msg: "删除成功"
+      }
+    } else {
+      return {
+        msg: "删除失败"
+      }
+    }
+  }
 
   @get('/getPageviews')
 

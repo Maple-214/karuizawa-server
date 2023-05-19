@@ -32,8 +32,6 @@ const HourseSchema = new mongoose.Schema({
     location: { type: String },
     // 地域地区街区
     regional_district_block: { type: String },
-    // '结构/层数'
-    structure_layers: { type: String },
     // '私道負担面積'
     private_road: { type: String },
     // 'セットバック'
@@ -84,12 +82,8 @@ const HourseSchema = new mongoose.Schema({
     parking: { type: String },
     // '次回更新予定日'
     update: { type: String },
-    // '类别'
-    category: { type: String },
     // '轮播区域'
     swiper_number: { type: String },
-    // 是否添加到喜欢
-    fav: { type: Boolean },
     // 标签
     tag: { type: Array },
     // 新物件
