@@ -8,9 +8,12 @@ import addRouter from "./router";
 import logger from "koa-logger";
 import log4js from "log4js";
 import { ResultHandler } from './middleware/resultHandler'
-import chalk from "chalk";
+// import chalk from "chalk";
 import cors from "koa2-cors";
 import path from 'path'
+const jwt = require('koa-jwt')
+// import { PRIVITE_KEY } from './utils/jwt'
+
 require('./mongodb/connect')
 
 const staticFiles = require('koa-static');
@@ -31,6 +34,9 @@ log4.level = "debug";
 app.use(logger(info => {
   log4.debug(info);
 }));
+// 验证失败会返回401错误
+app.use(jwt({ secret: 'PRIVITE_KEY',debug: true})
+   .unless({ path: [/^\/user\/login/] }));
 app.use(koaBody({
   multipart: true, //支持图片文件
   formidable: {
@@ -44,14 +50,15 @@ app.use(koaBody({
     },
   }
 }))
-// app.use(koaBody());
 
-app.use(async (ctx, next) => {
-  await next()
-  // log4.debug(chalk.green('请求路径:  ') + ctx.request.url);
-  log4.debug(chalk.green('请求body:  ') + JSON.stringify(ctx.request.body));
-  log4.debug(chalk.green('返回数据:  ') + JSON.stringify(ctx.body));
-})
+// app.use(async (ctx, next) => {
+//   await next()
+//   // log4.debug(chalk.green('请求路径:  ') + ctx.request.url);
+//   log4.debug(chalk.green('请求body:  ') + JSON.stringify(ctx.request.body));
+//   log4.debug(chalk.green('返回数据:  ') + JSON.stringify(ctx.body));
+// })
+
+
 
 app.use(ResultHandler());
 //加载路由
@@ -70,10 +77,10 @@ app.on("error", (err, ctx: Context) => {
   log4.error(err); //log all errors
   ctx.status = 500;
   if (ctx.app.env !== "development") {
-    //throw the error to frontEnd when in the develop mode
     ctx.res.end(err.stack); //finish the response
   }
 });
+
 
 
 app.listen(port, () => {

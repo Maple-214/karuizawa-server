@@ -5,8 +5,12 @@ import { post, prefix, get } from "../requestDecorator";
 import userList from "../mockdb/userList";
 import UsersModel from "../mongodb/models/userSchema"
 import * as Koa from 'koa';
+// import { PRIVITE_KEY } from '../utils/jwt'
+
 import { UserSchema, UserInfo, OtherInfo } from "../types/users";
-import { generateToken } from "../utils/jwt";
+// import { generateToken } from "../utils/jwt";
+const jwt = require('jsonwebtoken');
+
 
 @prefix('/user')
 export default class User {
@@ -21,11 +25,15 @@ export default class User {
     const _password = userInfo.password?.toString()
     // 密码验证错误
     if (_password !== password) return { err: "密码错误" }
-
-    const token = generateToken({ username })
+    const token = jwt.sign(
+      {
+        name: data.username
+      },
+      'PRIVITE_KEY', // secret
+      { expiresIn: 60 * 60 } // 60 * 60 s
+    );
 
     // 登录成功返回token
-    console.log({ username, password, _password, token, userInfo });
     return {
       userId: userInfo.userId,
       accessToken: token,
