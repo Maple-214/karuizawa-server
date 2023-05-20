@@ -5,7 +5,8 @@ import { post, prefix, get } from "../requestDecorator";
 import userList from "../mockdb/userList";
 import UsersModel from "../mongodb/models/userSchema"
 import * as Koa from 'koa';
-// import { PRIVITE_KEY } from '../utils/jwt'
+import { PRIVITE_KEY } from '../utils/jwt'
+import { decrypt } from '../utils/crypto'
 
 import { UserSchema, UserInfo, OtherInfo } from "../types/users";
 // import { generateToken } from "../utils/jwt";
@@ -17,7 +18,8 @@ export default class User {
 
   @post('/login')
   async login(ctx: any): Promise<UserInfo | OtherInfo> {
-    const { username, password } = ctx.request.body
+    const username = decrypt(ctx.request.body.username || '')
+    const password = decrypt(ctx.request.body.password || '')
     const data = await UsersModel.find({ username: username }, { _id: 0 });
     // 数据库查不到数据说明没有此人。 后面账号密码不用二次验证
     if (data.length == 0) return { err: "账号或密码错误" }
@@ -29,7 +31,7 @@ export default class User {
       {
         name: data.username
       },
-      'PRIVITE_KEY', // secret
+      PRIVITE_KEY, // secret
       { expiresIn: 60 * 60 } // 60 * 60 s
     );
 

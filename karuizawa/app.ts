@@ -12,7 +12,7 @@ import { ResultHandler } from './middleware/resultHandler'
 import cors from "koa2-cors";
 import path from 'path'
 const jwt = require('koa-jwt')
-// import { PRIVITE_KEY } from './utils/jwt'
+import { PRIVITE_KEY } from './utils/jwt'
 
 require('./mongodb/connect')
 
@@ -35,8 +35,7 @@ app.use(logger(info => {
   log4.debug(info);
 }));
 // 验证失败会返回401错误
-app.use(jwt({ secret: 'PRIVITE_KEY',debug: true})
-   .unless({ path: [/^\/user\/login/] }));
+app.use(jwt({ secret: PRIVITE_KEY,debug: true}).unless({ path: [/^\/user\/login/] }));
 app.use(koaBody({
   multipart: true, //支持图片文件
   formidable: {
