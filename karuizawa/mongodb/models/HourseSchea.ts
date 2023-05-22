@@ -87,7 +87,9 @@ const HourseSchema = new mongoose.Schema({
     // 标签
     tag: { type: Array },
     // 新物件
-    new_hourse: { type: Boolean }
+    new_hourse: { type: Boolean },
+    // 住宅構造図
+    house_structure_picture: { type: Object },
 },{ versionKey: false });
 
 // 创建Model
