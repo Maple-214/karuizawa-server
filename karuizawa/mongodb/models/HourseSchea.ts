@@ -82,12 +82,20 @@ const HourseSchema = new mongoose.Schema({
     parking: { type: String },
     // '次回更新予定日'
     update: { type: String },
-    // '轮播区域'
-    swiper_number: { type: String },
+    // '轮播图片类型 1-banner 2-新着物件 3-営業担当のオススメ物件 4-価格変更 5-新着賃貸物件 6-おすすめ賃貸物件'
+    pic_type: { type: String },
     // 标签
     tag: { type: Array },
     // 新物件
-    new_hourse: { type: Boolean }
+    new_hourse: { type: Boolean },
+    // 住宅構造図
+    house_structure_picture: { type: Object },
+    // ユーチューブのリンク
+    youtube_src: { type: String },
+    // 売主様より
+    seller_talk: { type: String },
+    // 担当者より
+    charge_talk:　{ type: String },
 },{ versionKey: false });
 
 // 创建Model

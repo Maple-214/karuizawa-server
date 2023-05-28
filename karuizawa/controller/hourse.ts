@@ -6,6 +6,7 @@ import { post, prefix, get } from "../requestDecorator";
 import faker from 'faker'
 import HourseModel from "../mongodb/models/HourseSchea";
 import { cloneDeep } from 'lodash'
+const { ObjectId } = require('mongodb');
 
 export interface ArticleModel {
   id: number
@@ -57,27 +58,59 @@ export default class Article {
     const page = parseInt(ctx.query.page) || 1; // 获取页码，默认为第一页
     const limit = parseInt(ctx.query.limit) || 5; // 每页显示的数据量，默认为10
     const title = ctx.query?.title || ''
+    const getall = ctx.query?.getall || false
     try {
-      
       // 查询当前页的数据
-      let data: any, total:number
+      let data: any, total: number
       if (title) {
         data = await HourseModel.find({ name: new RegExp(title) })
           .skip((page - 1) * limit)
           .limit(limit);
-        total =  (await HourseModel.find({ name: new RegExp(title) })).length
+        total = (await HourseModel.find({ name: new RegExp(title) })).length
+      } else if (getall) {
+        data = await HourseModel.find()
+        total = (await HourseModel.find()).length
       } else {
         // 查询总记录数
         total = await HourseModel.countDocuments();
         data = await HourseModel.find()
           .skip((page - 1) * limit)
           .limit(limit);
+
       }
       console.log({ query: ctx.query });
       return {
         data,
         total,
       }
+    } catch (error) {
+      return { error: 'Internal Server Error' }
+    }
+  }
+  @get('/detail')
+  async getHoursesDetail(ctx: any) {
+    const _id = ctx.query?._id || ''
+    try {
+      let data: any
+      data = await HourseModel.find({ _id, })
+      console.log({ query: ctx.query });
+      if (data.length > 0) {
+        return data[0]
+      } else {
+        return {}
+      }
+    } catch (error) {
+      return { error: 'Internal Server Error' }
+    }
+  }
+  @post('/favlist')
+  async getFavList(ctx: any) {
+    const { ids } = ctx.request.body;
+    try {
+    const query = { _id: { $in: JSON.parse(ids).map((id: any) => new ObjectId(id)) } };
+    let data: any
+    data = await HourseModel.find(query)
+    return data
     } catch (error) {
       return { error: 'Internal Server Error' }
     }
