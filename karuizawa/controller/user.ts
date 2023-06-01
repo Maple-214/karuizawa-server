@@ -13,7 +13,7 @@ import { UserSchema, UserInfo, OtherInfo } from "../types/users";
 const jwt = require('jsonwebtoken');
 
 
-@prefix('/user')
+@prefix('/api/user')
 export default class User {
 
   @post('/login')

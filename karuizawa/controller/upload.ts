@@ -4,7 +4,7 @@
 import { post, prefix } from "../requestDecorator";
 var path = require("path");
 
-@prefix('/upload')
+@prefix('/api/upload')
 export default class Upload {
     @post('')
     async upload(ctx: any) {
