@@ -50,7 +50,7 @@ for (let i = 0; i < articleCount; i++) {
     pageviews: faker.random.number({ min: 300, max: 500 })
   })
 }
-@prefix('/hourse')
+@prefix('/api/hourse')
 export default class Article {
 
   @get('/hourses')
