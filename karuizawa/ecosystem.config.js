@@ -2,7 +2,7 @@ module.exports = {
     apps: [
       {
         name: 'karuizawa-server',
-        script: 'cd karuizawa && ts-node app.ts',
+        script: 'ts-node app.ts',
         watch: true,
         ignore_watch: ['node_modules'],
         watch_delay: 1000,
