@@ -1,5 +1,5 @@
 {
-  "name": "admin-tmpl-mock",
+  "name": "karuizawa-server",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://RainManGO.github.io/vue3-composition-admin",
@@ -35,7 +35,8 @@
     "path-to-regexp": "^6.2.0",
     "reflect-metadata": "^0.1.13",
     "screenfull": "^5.0.2",
-    "sortablejs": "^1.13.0"
+    "sortablejs": "^1.13.0",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/faker": "^5.1.5",
