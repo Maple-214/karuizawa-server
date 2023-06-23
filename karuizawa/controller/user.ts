@@ -3,12 +3,12 @@
  */
 import { post, prefix, get } from "../requestDecorator";
 import userList from "../mockdb/userList";
-import UsersModel from "../mongodb/models/userSchema"
 import * as Koa from 'koa';
 import { PRIVITE_KEY } from '../utils/jwt'
 import { decrypt } from '../utils/crypto'
 
 import { UserSchema, UserInfo, OtherInfo } from "../types/users";
+import UsersModel from "karuizawa/mongodb/models/UserSchema";
 // import { generateToken } from "../utils/jwt";
 const jwt = require('jsonwebtoken');
 
