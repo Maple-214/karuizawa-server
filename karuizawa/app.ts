@@ -23,7 +23,13 @@ const app = new Koa();
 const home = staticFiles(path.join(__dirname) + '/public/static');
 app.use(home)
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://oa.oppenheim.co.jp', // 设置允许的跨域请求源
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // 允许的HTTP方法
+    credentials: true // 设置为true，以便支持跨域携带cookie等身份信息
+  })
+);
 const router = new koaRouter();
 
 const port = 3300;
