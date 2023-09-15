@@ -107,10 +107,10 @@ export default class Article {
   async getFavList(ctx: any) {
     const { ids } = ctx.request.body;
     try {
-    const query = { _id: { $in: JSON.parse(ids).map((id: any) => new ObjectId(id)) } };
-    let data: any
-    data = await HourseModel.find(query)
-    return data
+      const query = { _id: { $in: JSON.parse(ids).map((id: any) => new ObjectId(id)) } };
+      let data: any
+      data = await HourseModel.find(query)
+      return data
     } catch (error) {
       return { error: 'Internal Server Error' }
     }
